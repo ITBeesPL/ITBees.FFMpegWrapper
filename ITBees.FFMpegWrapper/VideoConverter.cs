@@ -5,10 +5,12 @@ namespace ITBees.FFMpegWrapper;
 
 public partial class VideoConverter : IVideoConverter
 {
-    public void ConvertWMVtoWebM(string inputPath, string outputPath, AudioBitrate audioBitrate = AudioBitrate.AudioBitrate128k, Crf crf = Crf.Crf20, Codec codec = Codec.vp9)
+    public void ConvertWMVtoWebM(bool overwriteTargetFileIfExist, string inputPath, string outputPath, AudioBitrate audioBitrate = AudioBitrate.AudioBitrate128k, Crf crf = Crf.Crf20, Codec codec = Codec.vp9)
     {
+        var overwriteParameter = GetOverwriteParameter(overwriteTargetFileIfExist);
+
         var args =
-            $"-i \"{inputPath}\" -c:v libvpx-{codec} -crf {((int)crf)} -b:v 0 -c:a libvorbis -b:a {(int)audioBitrate}k \"{outputPath}\"";
+            $"{overwriteParameter} -i \"{inputPath}\" -c:v libvpx-{codec} -crf {((int)crf)} -b:v 0 -c:a libvorbis -b:a {(int)audioBitrate}k \"{outputPath}\"";
         var convertProcess = new ProcessStartInfo
         {
             FileName = "ffmpeg",
@@ -25,10 +27,12 @@ public partial class VideoConverter : IVideoConverter
         }
     }
 
-    public void ConvertWMVtoMov(string inputPath, string outputPath, AudioBitrate audioBitrate = AudioBitrate.AudioBitrate128k, Crf crf = Crf.Crf20)
+    public void ConvertWMVtoMov(bool overwriteTargetFileIfExist, string inputPath, string outputPath, AudioBitrate audioBitrate = AudioBitrate.AudioBitrate128k, Crf crf = Crf.Crf20)
     {
+        var overwriteParameter = GetOverwriteParameter(overwriteTargetFileIfExist);
+
         var args =
-            $"-i \"{inputPath}\" -c:v libx264 -crf {((int)crf)} -preset slow -c:a aac -b:a {(int)audioBitrate}k \"{outputPath}\"";
+            $"{overwriteParameter} -i \"{inputPath}\" -c:v libx264 -crf {((int)crf)} -preset slow -c:a aac -b:a {(int)audioBitrate}k \"{outputPath}\"";
         var convertProcess = new ProcessStartInfo
         {
             FileName = "ffmpeg",
@@ -44,9 +48,11 @@ public partial class VideoConverter : IVideoConverter
             process.WaitForExit();
         }
     }
-    public void ConvertMP4toMov(string inputPath, string outputPath)
+    public void ConvertMP4toMov(bool overwriteTargetFileIfExist, string inputPath, string outputPath)
     {
-        var args = $"-i \"{inputPath}\" -c copy \"{outputPath}\"";
+        var overwriteParameter = GetOverwriteParameter(overwriteTargetFileIfExist);
+
+        var args = $"{overwriteParameter} -i \"{inputPath}\" -c copy \"{outputPath}\"";
 
         var convertProcess = new ProcessStartInfo
         {
@@ -63,10 +69,21 @@ public partial class VideoConverter : IVideoConverter
             process.WaitForExit();
         }
     }
-    public void ConvertWebMtoMov(string inputPath, string outputPath, AudioBitrate audioBitrate = AudioBitrate.AudioBitrate128k, Crf crf = Crf.Crf20, Codec codec = Codec.vp9)
+
+    private static string GetOverwriteParameter(bool overwriteTargetFileIfExist)
     {
+        var overwriteParameter = string.Empty;
+        if (overwriteTargetFileIfExist)
+            overwriteParameter = "-y";
+        return overwriteParameter;
+    }
+
+    public void ConvertWebMtoMov(bool overwriteTargetFileIfExist, string inputPath, string outputPath, AudioBitrate audioBitrate = AudioBitrate.AudioBitrate128k, Crf crf = Crf.Crf20, Codec codec = Codec.vp9)
+    {
+        var overwriteParameter = GetOverwriteParameter(overwriteTargetFileIfExist);
+
         var args =
-            $"-i \"{inputPath}\" -c:v libx264 -crf {((int)crf)} -preset slow -c:a aac -b:a {(int)audioBitrate}k \"{outputPath}\"";
+            $"{overwriteParameter} -i \"{inputPath}\" -c:v libx264 -crf {((int)crf)} -preset slow -c:a aac -b:a {(int)audioBitrate}k \"{outputPath}\"";
         var convertProcess = new ProcessStartInfo
         {
             FileName = "ffmpeg",
