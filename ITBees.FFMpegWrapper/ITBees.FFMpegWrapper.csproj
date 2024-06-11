@@ -5,10 +5,16 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
     <Folder Include="Interfaces\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FFMediaToolkit" Version="4.5.1" />
+    <PackageReference Include="FFmpeg.AutoGen" Version="6.1.0" />
   </ItemGroup>
 
 </Project>
